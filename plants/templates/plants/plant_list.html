@@ -6,26 +6,26 @@
 <head>
     <title>My Plants</title>
     <link rel="stylesheet" href="{% static 'plants/css/plant_modals.css' %}">
-    <script>
-        function confirmDeletion() {
-            return confirm("Are you sure you want to delete this plant?");
-        }
-    </script>
+    <script src="{% static 'plants/js/plant_modals.js' %}" defer></script>
+    <script src="{% static 'plants/js/add_plant_toggle.js' %}" defer></script>
 </head>
 <body>
     <h1>🌿 My Plants</h1>
 
-    <!-- Add Plant Form -->
-    <h2>Add a New Plant</h2>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ add_form.as_p }}
-        <button type="submit" name="add">Add Plant</button>
-    </form>
+    <!-- Toggle Add Plant Button -->
+    <button id="toggle-add-plant-btn" type="button" onclick="toggleAddPlantForm()">Add Plant</button>
+
+    <!-- Add Plant Form (Initially Hidden) -->
+    <div id="add-plant-form" style="display: none; margin-top: 10px;">
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ add_form.as_p }}
+            <button type="submit" name="add">Submit</button>
+        </form>
+    </div>
 
     <hr>
 
-    <!-- List of user's plants -->
     {% if plants %}
         <h2>Your Plants</h2>
         <ul>
@@ -93,6 +93,5 @@
 
     <br>
     <a href="{% url 'dashboard' %}">← Back to Dashboard</a>
-    <script src="{% static 'plants/js/plant_modals.js' %}"></script>
 </body>
 </html>
