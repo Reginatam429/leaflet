@@ -3,6 +3,5 @@ from django import template
 register = template.Library()
 
 @register.filter
-def get_item(dictionary, key):
+def dict_key(dictionary, key):
     return dictionary.get(key)
-

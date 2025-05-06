@@ -1,9 +1,11 @@
+{% load static %}
 {% load plant_extras %}
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>My Plants</title>
+    <link rel="stylesheet" href="{% static 'plants/css/plant_modals.css' %}">
     <script>
         function confirmDeletion() {
             return confirm("Are you sure you want to delete this plant?");
@@ -45,12 +47,34 @@
                         <div class="modal-content">
                             <span class="close" onclick="closeModal({{ plant.id }})">&times;</span>
 
-                            <form method="POST" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                {{ edit_forms|dict_key:plant.id|default:"" }}
-                                <input type="hidden" name="edit_plant_id" value="{{ plant.id }}">
-                                <button type="submit" name="edit">Save Changes</button>
-                            </form>
+                            <!-- Static Display -->
+                            <div id="plant-details-{{ plant.id }}">
+                                {% if plant.image %}
+                                    <img src="{{ plant.image.url }}" alt="{{ plant.nickname }}" width="150" />
+                                {% else %}
+                                    <img src="{{ MEDIA_URL }}plant_images/default.jpg" alt="Default plant" width="150" />
+                                {% endif %}
+                                <p><strong>Nickname:</strong> {{ plant.nickname }}</p>
+                                <p><strong>Species:</strong> {{ plant.species }}</p>
+                                <p><strong>Light Needs:</strong> {{ plant.sunlight }}</p>
+                                <p><strong>Water Needs:</strong> {{ plant.watering }}</p>
+                                <p><strong>Soil Type:</strong> {{ plant.soil }}</p>
+                                <p><strong>Care Instructions:</strong> {{ plant.care_instructions }}</p>
+                                <p><strong>Date Added:</strong> {{ plant.date_added }}</p>
+                                <button onclick="showEditForm({{ plant.id }})">Edit</button>
+                            </div>
+
+                            <!-- Hidden Edit Form -->
+                            <div id="edit-form-{{ plant.id }}" style="display: none;">
+                                <form method="POST" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    {% with form=edit_forms|dict_key:plant.id %}
+                                        {{ form.as_p }}
+                                    {% endwith %}
+                                    <input type="hidden" name="edit_plant_id" value="{{ plant.id }}">
+                                    <button type="submit" name="edit">Save Changes</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
 
@@ -69,5 +93,6 @@
 
     <br>
     <a href="{% url 'dashboard' %}">← Back to Dashboard</a>
+    <script src="{% static 'plants/js/plant_modals.js' %}"></script>
 </body>
 </html>

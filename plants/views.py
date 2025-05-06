@@ -52,10 +52,10 @@ def plant_list(request):
     else:
         add_form = PlantForm()
 
-    edit_forms = {str(plant.id): PlantForm(instance=plant) for plant in plants}
+    edit_forms = {plant.id: PlantForm(instance=plant) for plant in plants}
 
     return render(request, 'plants/plant_list.html', {
-        'plants': plants,
-        'add_form': add_form,
-        'edit_forms': edit_forms,
+    'plants': plants,
+    'add_form': add_form,
+    'edit_forms': edit_forms,
     })
