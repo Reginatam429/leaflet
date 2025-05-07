@@ -164,19 +164,24 @@ def add_from_wishlist_to_myplants(request):
     data = json.loads(request.body)
     wishlist_id = data.get('wishlist_id')
 
-    plant = get_object_or_404(WishlistPlant, id=wishlist_id, user=request.user)
+    # Find the wishlist plant
+    wishlist_plant = get_object_or_404(WishlistPlant, id=wishlist_id, user=request.user)
 
+    # Create a new plant entry
     new_plant = Plant.objects.create(
         user=request.user,
-        nickname=plant.common_name or plant.species,
-        species=plant.species,
-        common_name=plant.common_name,
-        other_names=plant.other_names,
-        watering=plant.watering,
-        sunlight=plant.sunlight,
-        info_summary=plant.info_summary,
-        water_interval_days=7,  # or calculate based on watering
-        image=f"plant_images/default.png" if not plant.image_url else None
+        nickname=wishlist_plant.common_name or wishlist_plant.species,
+        species=wishlist_plant.species,
+        common_name=wishlist_plant.common_name,
+        other_names=wishlist_plant.other_names,
+        watering=wishlist_plant.watering,
+        sunlight=wishlist_plant.sunlight,
+        info_summary=wishlist_plant.info_summary,
+        water_interval_days=7,
+        image_url=wishlist_plant.image_url  # ✅ Store the external image URL
     )
+
+    # Remove from wishlist
+    wishlist_plant.delete()
 
     return JsonResponse({'status': 'added', 'plant_id': new_plant.id})

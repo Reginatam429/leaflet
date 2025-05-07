@@ -1,76 +1,67 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My Plant Wishlist</title>
-    <link rel="stylesheet" href="{% static 'plants/css/styles.css' %}">
-</head>
-<body>
-    <header>
-        <h1>Leaflet</h1>
-    </header>
 
-    <main>
-        <h2>🌿 My Plant Wishlist</h2>
+{% block content %}
+<div class="container">
+    <h2 class="section-title">🌿 My Plant Wishlist</h2>
 
-        <!-- Search Bar -->
-        <div id="wishlist-search-container">
-            <input type="text" id="wishlist-search-input" placeholder="Search for a plant by name...">
-            <button type="button" id="wishlist-search-btn">🔍 Search</button>
+    <!-- Search Bar -->
+    <div id="wishlist-search-container" class="wishlist-search">
+        <input type="text" id="wishlist-search-input" placeholder="Search for a plant by name...">
+        <button type="button" id="wishlist-search-btn">🔍 Search</button>
 
-            <!-- Dropdown for search results -->
-            <select id="wishlist-search-dropdown" style="display: none; margin-top: 10px;">
-                <option disabled selected>Select a plant</option>
-            </select>
+        <select id="wishlist-search-dropdown" style="display: none; margin-top: 10px;">
+            <option disabled selected>Select a plant</option>
+        </select>
+    </div>
+
+    <!-- Wishlist Plants Display -->
+    <div id="wishlist-plant-list" class="card-grid" style="margin-top: 30px;">
+        {% if wishlist %}
+            {% for plant in wishlist %}
+                <div class="plant-card wishlist-item"
+                    data-id="{{ plant.id }}"
+                    data-perenual-id="{{ plant.perenual_id }}"
+                    data-species="{{ plant.species }}"
+                    data-common-name="{{ plant.common_name }}"
+                    data-other-names="{{ plant.other_names|join:', ' }}"
+                    data-watering="{{ plant.watering }}"
+                    data-sunlight="{{ plant.sunlight }}"
+                    data-info="{{ plant.info_summary }}"
+                    data-image-url="{{ plant.image_url|default:'/media/plant_images/default.png' }}"
+                    data-added="{{ plant.already_added|yesno:'true,false' }}"
+                >
+                    <img src="{{ plant.image_url|default:'/media/plant_images/default.png' }}" alt="plant image" class="plant-img">
+                    <h3>{{ plant.common_name|default:"(Unknown Name)" }}</h3>
+                    <p class="small-muted">{{ plant.species }}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No plants wishlisted yet.</p>
+        {% endif %}
+    </div>
+
+    <!-- Modal -->
+    <div id="wishlist-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span id="wishlist-modal-close" class="close">❌</span>
+            <h3 id="modal-plant-name"></h3>
+            <img id="modal-plant-img" src="" alt="Plant image" class="modal-img"><br>
+            <p><strong>Scientific Name:</strong> <span id="modal-species"></span></p>
+            <p><strong>Other Names:</strong> <span id="modal-other-names"></span></p>
+            <p><strong>Watering:</strong> <span id="modal-watering"></span></p>
+            <p><strong>Sunlight:</strong> <span id="modal-sunlight"></span></p>
+            <p><strong>Info:</strong> <span id="modal-info-summary"></span></p>
+
+            <!-- Visible for API Search -->
+            <button id="add-to-wishlist-btn" class="btn-submit" style="display: none;">🌱 Add to Wishlist</button>
+
+            <!-- Visible for saved items -->
+            <button id="add-to-my-plants-btn" class="btn-submit" style="display: none;">🌿 Add to My Plants</button>
+            <button id="delete-from-wishlist-btn" class="btn-delete" style="display: none;">🗑️ Remove from Wishlist</button>
         </div>
+    </div>
+</div>
 
-        <!-- Wishlist Plants Display -->
-        <div id="wishlist-plant-list" style="margin-top: 30px;">
-            {% if wishlist %}
-                <ul>
-                    {% for plant in wishlist %}
-                        <li class="wishlist-item"
-                            data-id="{{ plant.id }}"
-                            data-perenual-id="{{ plant.perenual_id }}"
-                            data-species="{{ plant.species }}"
-                            data-common-name="{{ plant.common_name }}"
-                            data-other-names="{{ plant.other_names|join:', ' }}"
-                            data-watering="{{ plant.watering }}"
-                            data-sunlight="{{ plant.sunlight }}"
-                            data-info="{{ plant.info_summary }}"
-                            data-image-url="{{ plant.image_url|default:'/media/plant_images/default.png' }}"
-                        >
-                            <img src="{{ plant.image_url|default:'/media/plant_images/default.png' }}" alt="plant image" width="60">
-                            <strong>{{ plant.common_name|default:"(Unknown Name)" }}</strong>
-                            <em>({{ plant.species }})</em>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p>No plants wishlisted yet.</p>
-            {% endif %}
-        </div>
-
-        <!-- Modal (Hidden by default) -->
-        <div id="wishlist-modal" style="display: none;">
-            <div class="modal-content">
-                <span id="wishlist-modal-close" style="cursor: pointer;">❌</span>
-                <h3 id="modal-plant-name"></h3>
-                <img id="modal-plant-img" src="" alt="Plant image" width="120"><br>
-                <p><strong>Scientific Name:</strong> <span id="modal-species"></span></p>
-                <p><strong>Other Names:</strong> <span id="modal-other-names"></span></p>
-                <p><strong>Watering:</strong> <span id="modal-watering"></span></p>
-                <p><strong>Sunlight:</strong> <span id="modal-sunlight"></span></p>
-                <p><strong>Info:</strong> <span id="modal-info-summary"></span></p>
-
-                <!-- Buttons for both search and saved wishlist -->
-                <button id="add-to-my-plants-btn">🌱 Add to My Plants</button>
-                <button id="delete-from-wishlist-btn">🗑️ Remove from Wishlist</button>
-            </div>
-        </div>
-    </main>
-
-    <script src="{% static 'plants/js/wishlist.js' %}"></script>
-</body>
-</html>
+<script src="{% static 'plants/js/wishlist.js' %}"></script>
+{% endblock %}

@@ -10,6 +10,7 @@ python-dotenv = "*"
 requests = "*"
 python-decouple = "*"
 django = "*"
+dj-database-url = "*"
 
 [dev-packages]
 

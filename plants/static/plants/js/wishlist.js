@@ -16,8 +16,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const dropdown = document.getElementById('wishlist-search-dropdown');
     const modal = document.getElementById('wishlist-modal');
     const addBtn = document.getElementById('add-to-wishlist-btn');
+    const addToMyPlantsBtn = document.getElementById('add-to-my-plants-btn');
+    const deleteBtn = document.getElementById('delete-from-wishlist-btn');
 
-    // 🌱 Search for plants
+    // Search for plants
     searchBtn.addEventListener('click', function () {
         const query = searchInput.value.trim();
         if (!query) return;
@@ -49,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     });
 
-    // 📋 Show plant info in modal
+    // Show plant info from dropdown
     dropdown.addEventListener('change', function () {
         const selectedId = this.value;
         if (!selectedId) return;
@@ -57,12 +59,10 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/plants/plant-details/${selectedId}/`)
             .then(response => response.json())
             .then(plant => {
-                console.log('🪴 Wishlist Plant Details:', plant);
-
                 const species = Array.isArray(plant.scientific_name) ? plant.scientific_name[0] : plant.scientific_name || '';
                 const commonName = plant.common_name || '';
                 const otherNames = Array.isArray(plant.other_name) ? plant.other_name.join(', ') : '';
-                const imageUrl = plant.default_image?.regular_url || '';
+                const imageUrl = plant.default_image?.regular_url || '/media/plant_images/default.png';
                 const watering = plant.watering || '';
                 const sunlight = Array.isArray(plant.sunlight) ? plant.sunlight.join(', ') : '';
                 const summary = plant.cycle ? `It is a ${plant.cycle} plant.` : '';
@@ -75,36 +75,40 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('modal-info-summary').textContent = summary;
 
                 const imageEl = document.getElementById('modal-plant-img');
-                if (imageUrl) {
-                    imageEl.src = imageUrl;
-                    imageEl.alt = `${commonName} image`;
-                }
+                imageEl.src = imageUrl;
+                imageEl.alt = `${commonName} image`;
 
+                // Update dataset for add-to-wishlist
                 addBtn.dataset.perenualId = plant.id;
                 addBtn.dataset.species = species;
                 addBtn.dataset.commonName = commonName;
                 addBtn.dataset.otherNames = otherNames;
-                addBtn.dataset.watering = watering;
-                addBtn.dataset.sunlight = Array.isArray(plant.sunlight) ? plant.sunlight[0] : '';
+                addBtn.dataset.watering = watering.toLowerCase();
+                addBtn.dataset.sunlight = Array.isArray(plant.sunlight) ? plant.sunlight[0].toLowerCase().replace(/\s+/g, '_') : '';
                 addBtn.dataset.summary = summary;
                 addBtn.dataset.imageUrl = imageUrl;
 
-                modal.style.display = 'block';
+                // Show wishlist button, hide others
+                addBtn.style.display = 'inline-block';
+                addToMyPlantsBtn.style.display = 'none';
+                deleteBtn.style.display = 'none';
+
+                modal.style.display = 'flex';
             })
             .catch(error => {
                 console.error('Error fetching plant details:', error);
             });
     });
 
-    // 💾 Add to wishlist
+    // Add to wishlist
     addBtn.addEventListener('click', function () {
         const payload = {
             perenual_id: this.dataset.perenualId,
             species: this.dataset.species,
             common_name: this.dataset.commonName,
             other_names: this.dataset.otherNames.split(',').map(name => name.trim()).filter(Boolean),
-            watering: this.dataset.watering.toLowerCase(),
-            sunlight: this.dataset.sunlight.replace(/\s+/g, '_').toLowerCase(),
+            watering: this.dataset.watering,
+            sunlight: this.dataset.sunlight,
             info_summary: this.dataset.summary,
             image_url: this.dataset.imageUrl
         };
@@ -117,114 +121,97 @@ document.addEventListener('DOMContentLoaded', function () {
             },
             body: JSON.stringify(payload)
         })
-            .then(response => {
-                if (!response.ok) throw new Error('Failed to add to wishlist');
-                return response.json();
-            })
-            .then(data => {
-                console.log('✅ Added to wishlist:', data);
-                document.getElementById('wishlist-modal').style.display = 'none';
-            
-                // Show feedback message
-                const feedback = document.getElementById('wishlist-feedback');
-                feedback.style.display = 'block';
-                feedback.textContent = '✅ Plant added to wishlist!';
-            
-                // Hide the message after 3 seconds
-                setTimeout(() => {
-                    feedback.style.display = 'none';
-                }, 3000);
-                location.reload();
-            })
-            .catch(error => {
-                console.error('Error adding to wishlist:', error);
-            });
+        .then(response => {
+            if (!response.ok) throw new Error('Failed to add to wishlist');
+            return response.json();
+        })
+        .then(data => {
+            console.log('✅ Added to wishlist:', data);
+            modal.style.display = 'none';
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error adding to wishlist:', error);
+        });
     });
 
     // Close modal
     document.getElementById('wishlist-modal-close').addEventListener('click', () => {
         modal.style.display = 'none';
     });
-
-    // 🔐 CSRF token helper
-    function getCSRFToken() {
-        const name = 'csrftoken';
-        const cookies = document.cookie.split(';');
-        for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.startsWith(name + '=')) {
-                return decodeURIComponent(cookie.slice(name.length + 1));
-            }
-        }
-        return '';
-    }
 });
 
+// Handle click on saved wishlist cards
 document.querySelectorAll('.wishlist-item').forEach(item => {
     item.addEventListener('click', function () {
-        document.getElementById('modal-plant-name').textContent =
-            `${this.dataset.commonName} (${this.dataset.species})`;
-        document.getElementById('modal-other-names').textContent = this.dataset.otherNames;
-        document.getElementById('modal-watering').textContent = this.dataset.watering;
-        document.getElementById('modal-sunlight').textContent = this.dataset.sunlight;
-        document.getElementById('modal-info-summary').textContent = this.dataset.info;
-        document.getElementById('modal-plant-img').src = this.dataset.imageUrl;
-        document.getElementById('modal-plant-img').alt = this.dataset.commonName;
+        const commonName = this.dataset.commonName;
+        const species = this.dataset.species;
+        const otherNames = this.dataset.otherNames;
+        const watering = this.dataset.watering;
+        const sunlight = this.dataset.sunlight;
+        const info = this.dataset.info;
+        const imageUrl = this.dataset.imageUrl || '/media/plant_images/default.png';
 
-        // Set modal buttons for follow-up actions
-        const deleteBtn = document.getElementById('delete-from-wishlist-btn');
-        deleteBtn.dataset.wishlistId = this.dataset.id;
+        document.getElementById('modal-plant-name').textContent = `${commonName} (${species})`;
+        document.getElementById('modal-species').textContent = species;
+        document.getElementById('modal-other-names').textContent = otherNames;
+        document.getElementById('modal-watering').textContent = watering;
+        document.getElementById('modal-sunlight').textContent = sunlight;
+        document.getElementById('modal-info-summary').textContent = info;
+        document.getElementById('modal-plant-img').src = imageUrl;
+        document.getElementById('modal-plant-img').alt = commonName;
+
+        // Set wishlist ID for backend
+        const wishlistId = this.dataset.id;
+        const alreadyAdded = this.dataset.added === 'true';
 
         const addToMyPlantsBtn = document.getElementById('add-to-my-plants-btn');
-        addToMyPlantsBtn.dataset.wishlistId = this.dataset.id;
+        const deleteBtn = document.getElementById('delete-from-wishlist-btn');
+        const addToWishlistBtn = document.getElementById('add-to-wishlist-btn');
 
-        document.getElementById('wishlist-modal').style.display = 'block';
-    });
-});
+        // Hide search-only button
+        addToWishlistBtn.style.display = 'none';
 
-document.getElementById('delete-from-wishlist-btn').addEventListener('click', function () {
-    const wishlistId = this.dataset.wishlistId;
+        // Set button actions
+        addToMyPlantsBtn.dataset.wishlistId = wishlistId;
+        deleteBtn.dataset.wishlistId = wishlistId;
 
-    fetch(`/plants/delete-from-wishlist/${wishlistId}/`, {
-        method: 'POST',
-        headers: {
-            'X-CSRFToken': getCSRFToken()
+        if (alreadyAdded) {
+            addToMyPlantsBtn.textContent = '🌿 View My Plants';
+            addToMyPlantsBtn.onclick = () => {
+                window.location.href = '/my-plants/';
+            };
+        } else {
+            addToMyPlantsBtn.textContent = '🌿 Add to My Plants';
+            addToMyPlantsBtn.onclick = function () {
+                fetch('/plants/add-from-wishlist-to-myplants/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCSRFToken()
+                    },
+                    body: JSON.stringify({ wishlist_id: wishlistId })
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to add plant');
+                    return response.json();
+                })
+                .then(data => {
+                    alert(`🌱 Plant added to your collection!\n\nView it here: http://127.0.0.1:8000/my-plants/`);
+                    document.getElementById('wishlist-modal').style.display = 'none';
+                    location.reload();
+                })                
+                .catch(error => {
+                    console.error('Error adding to my plants:', error);
+                });
+            };
         }
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Failed to delete from wishlist');
-        alert('❌ Plant removed from wishlist.');
-        location.reload();
-    })
-    .catch(error => {
-        console.error('Error removing from wishlist:', error);
+
+        // Show correct buttons
+        addToMyPlantsBtn.style.display = 'inline-block';
+        deleteBtn.style.display = 'inline-block';
+
+        document.getElementById('wishlist-modal').style.display = 'flex';
     });
 });
-
-document.getElementById('add-to-my-plants-btn').addEventListener('click', function () {
-    const payload = {
-        wishlist_id: this.dataset.wishlistId
-    };
-
-    fetch('/plants/add-from-wishlist-to-myplants/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken()
-        },
-        body: JSON.stringify(payload)
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Failed to add plant');
-        return response.json();
-    })
-    .then(data => {
-        alert(`🌱 Plant added to your collection!\n\nView it here: http://127.0.0.1:8000/my-plants/`);
-        document.getElementById('wishlist-modal').style.display = 'none';
-    })
-    .catch(error => {
-        console.error('Error adding to my plants:', error);
-    });
-});
-
 

@@ -1,35 +1,38 @@
-/* Botanical Calm Palette */
 :root {
-    --bg: #EFF5EC;
+    --bg: #FAF3E0;
     --primary: #587B6B;
     --accent: #A2C3A4;
     --highlight: #CFE8D8;
     --text: #324235;
 }
 
-
 body {
-    background-color: #EFF5EC;
-    color: #324235;
-    font-family: Arial, sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
+/* NAVIGATION */
 .navbar {
+    background-color: var(--accent);
+    padding: 12px 24px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #A2C3A4;
-    padding: 10px 20px;
+    flex-wrap: wrap;
 }
 
 .logo {
+    font-size: 1.5rem;
+    color: var(--text);
+    font-weight: bold;
     margin: 0;
-    font-size: 24px;
-    color: #324235;
 }
 
 .dropbtn {
-    background-color: #587B6B;
+    background-color: var(--primary);
     color: white;
     border: none;
     padding: 10px 14px;
@@ -46,28 +49,338 @@ body {
     display: none;
     position: absolute;
     right: 0;
-    background-color: #CFE8D8;
+    background-color: var(--highlight);
     min-width: 160px;
+    border-radius: 4px;
     box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
     z-index: 1;
-    border-radius: 4px;
 }
 
 .dropdown-content a {
-    color: #324235;
+    color: var(--text);
     padding: 12px 16px;
     display: block;
     text-decoration: none;
 }
 
 .dropdown-content a:hover {
-    background-color: #A2C3A4;
+    background-color: var(--accent);
 }
 
 .dropdown:hover .dropdown-content {
     display: block;
 }
 
-.dropdown-content.show {
-    display: block;
+/* MAIN CONTENT */
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    color: var(--primary);
+}
+
+button,
+.btn-submit,
+.btn-edit,
+.btn-delete {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+}
+
+.btn-submit {
+    background-color: var(--accent);
+    color: var(--text);
+}
+
+.btn-edit {
+    background-color: var(--highlight);
+    color: var(--text);
+}
+
+.btn-delete {
+    background-color: #ffecec;
+    color: #cc0000;
+}
+
+.link-back {
+    display: inline-block;
+    margin-top: 2rem;
+    text-decoration: none;
+    color: var(--primary);
+}
+
+.form-box {
+    background-color: var(--highlight);
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin: 1.5rem 0;
+    border: 2px solid var(--accent);
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.plant-preview,
+.modal-img {
+    margin: 10px 0;
+    width: 150px;
+    border-radius: 8px;
+}
+
+/* DASHBOARD STYLING */
+.dashboard {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.welcome {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+}
+
+.subheading {
+    font-size: 1.2rem;
+    color: var(--text);
+    margin-bottom: 2rem;
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+}
+
+.dashboard-card {
+    background-color: var(--highlight);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    color: var(--text);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-card h3 {
+    margin-top: 0.5rem;
+    font-size: 1.3rem;
+}
+
+.dashboard-card p {
+    font-size: 0.95rem;
+    color: var(--text);
+    margin-top: 0.5rem;
+}
+
+.card-icon {
+    font-size: 2rem;
+}
+
+.dashboard-card.logout {
+    background-color: #ffecec;
+    border-color: #ffcccc;
+    color: #cc0000;
+}
+
+
+/* PLANT LIST */
+.plant-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+    list-style: none;
+    padding: 0;
+    margin-top: 2rem;
+}
+
+.plant-list-item {
+    background-color: var(--highlight);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    position: relative;
+}
+
+.plant-img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.plant-card {
+    cursor: pointer;
+}
+
+.small-muted {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* MODALS */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modal-content {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+.close {
+    position: absolute;
+    top: 0.8rem;
+    right: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+/* Wishlist Search */
+.wishlist-search {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.wishlist-search input {
+    width: 100%;
+    max-width: 500px;
+    padding: 1rem;
+    font-size: 1.1rem;
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.wishlist-search button {
+    padding: 0.7rem 1.2rem;
+    font-size: 1rem;
+    background-color: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+    padding: 0;
+}
+
+.plant-card {
+    background-color: var(--highlight);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.plant-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+.plant-card h3 {
+    margin-top: 0.8rem;
+    font-size: 1.2rem;
+    color: var(--text);
+}
+
+.plant-card p {
+    font-size: 0.95rem;
+    color: #666;
+}
+
+.plant-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+/* Modal Styling */
+.modal-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    position: relative;
+    text-align: center;
+}
+
+.modal-img {
+    width: 150px;
+    height: auto;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+}
+
+#wishlist-search-dropdown {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    background-color: #fff;
+    color: var(--text);
+    margin-top: 0.75rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: border-color 0.3s ease;
+}
+
+#wishlist-search-dropdown:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.wishlist-search {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2rem 0;
+    gap: 0.75rem;
 }

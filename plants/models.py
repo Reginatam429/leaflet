@@ -5,8 +5,8 @@ from django.utils import timezone
 class Plant(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='plants')
     date_added = models.DateTimeField(auto_now_add=True)
-    image = models.ImageField(upload_to='plant_images/', blank=True, null=True, default='plant_images/default.png')
-
+    image = models.ImageField(upload_to='plant_images/', blank=True, null=True, default='plant_images/default.jpg')
+    image_url = models.URLField(blank=True, null=True)
     nickname = models.CharField(max_length=100)
     species = models.CharField(max_length=100)  # Scientific name
     common_name = models.CharField(max_length=100, blank=True)

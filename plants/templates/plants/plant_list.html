@@ -1,163 +1,117 @@
+{% extends 'base.html' %}
 {% load static %}
 {% load plant_extras %}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Plants</title>
-    <link rel="stylesheet" href="{% static 'plants/css/plant_modals.css' %}">
-    <script>
-        const API_KEY = "{{ PERENUAL_API_KEY }}";
-    </script>
-    <script src="{% static 'plants/js/plant_modals.js' %}" defer></script>
-    <script src="{% static 'plants/js/add_plant_toggle.js' %}" defer></script>
-</head>
-<body>
-    <h1>🌿 My Plants</h1>
+{% block content %}
+<div class="container">
+    <h1 class="section-title">🌿 My Plants</h1>
 
-    <!-- Toggle Add Plant Button -->
-    <button id="toggle-add-plant-btn" type="button" onclick="toggleAddPlantForm()">Add Plant</button>
+    <button id="toggle-add-plant-btn" class="btn-primary" onclick="toggleAddPlantForm()">Add Plant</button>
 
-    <!-- Add Plant Form (Initially Hidden) -->
-    <div id="add-plant-form" style="display: none; margin-top: 10px;">
+    <!-- Add Plant Form -->
+    <div id="add-plant-form" style="display: none;" class="form-box">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-
-            <!-- Species input + Search button -->
             <label for="id_species">Species (scientific name):</label>
             <input type="text" id="id_species" name="species">
             <button type="button" id="search-species-btn">🔍 Search</button>
 
-            <!-- Dropdown for Search results -->
             <select id="plant-dropdown" style="display: none;">
                 <option disabled selected>Choose a plant</option>
             </select>
 
-            <!-- Image Preview from API (or default) -->
-            <img id="plant-preview" src="{% static 'plants/images/default.jpg' %}" width="150" alt="Plant Preview" style="margin: 10px 0;">
+            <img id="plant-preview" src="{% static 'plants/images/default.jpg' %}" width="150" alt="Plant Preview" class="plant-preview">
 
-            <p>
-                <label for="id_image">Upload Image:</label><br>
-                {{ add_form.image }}
-            </p>
+            <div class="form-group">{{ add_form.image.label_tag }} {{ add_form.image }}</div>
+            <div class="form-group">{{ add_form.nickname.label_tag }} {{ add_form.nickname }}</div>
+            <div class="form-group">{{ add_form.common_name.label_tag }} {{ add_form.common_name }}</div>
+            <div class="form-group">{{ add_form.other_names.label_tag }} {{ add_form.other_names }}</div>
+            <div class="form-group">{{ add_form.watering.label_tag }} {{ add_form.watering }}</div>
+            <div class="form-group">{{ add_form.sunlight.label_tag }} {{ add_form.sunlight }}</div>
+            <div class="form-group">{{ add_form.info_summary.label_tag }} {{ add_form.info_summary }}</div>
+            <div class="form-group">{{ add_form.last_watered.label_tag }} {{ add_form.last_watered }}</div>
 
-            <p>
-                <label for="id_nickname">Nickname:</label><br>
-                {{ add_form.nickname }}
-            </p>
+            <label for="id_water_interval">Water Interval (days):</label>
+            <input type="number" id="id_water_interval" name="water_interval_days" readonly>
+            <label><input type="checkbox" id="override_water_interval"> Let me edit this</label>
 
-            <p>
-                <label for="id_common_name">Common Name:</label><br>
-                {{ add_form.common_name }}
-            </p>
-
-            <p>
-                <label for="id_other_names">Other Names:</label><br>
-                {{ add_form.other_names }}
-            </p>
-
-            <p>
-                <label for="id_watering">Watering Needs:</label><br>
-                {{ add_form.watering }}
-            </p>
-
-            <p>
-                <label for="id_sunlight">Sunlight Exposure:</label><br>
-                {{ add_form.sunlight }}
-            </p>
-
-            <p>
-                <label for="id_info_summary">Plant Info Summary:</label><br>
-                {{ add_form.info_summary }}
-            </p>
-
-            <p>
-                <label for="id_last_watered">Last Watered:</label><br>
-                {{ add_form.last_watered }}
-            </p>
-
-            <p>
-                <label for="id_water_interval">Water Interval (days):</label>
-                <input type="number" id="id_water_interval" name="water_interval_days" readonly>
-            
-                <label style="margin-left: 10px;">
-                    <input type="checkbox" id="override_water_interval"> Let me edit this
-                </label>
-            </p>            
-
-            <button type="submit" name="add">Submit</button>
+            <button type="submit" name="add" class="btn-submit">Submit</button>
         </form>
     </div>
-
 
     <hr>
 
     {% if plants %}
-        <h2>Your Plants</h2>
-        <ul>
-            {% for plant in plants %}
-                <li>
-                    <!-- Trigger Modal -->
-                    <div onclick="openModal({{ plant.id }})" style="cursor: pointer;">
+    <h2 class="section-title">Your Plants</h2>
+    <ul class="plant-list">
+        {% for plant in plants %}
+        <li class="plant-list-item">
+            <div onclick="openModal({{ plant.id }})" class="plant-card">
+                {% if plant.image %}
+                    <img src="{{ plant.image.url }}" alt="{{ plant.nickname }}" class="plant-img" />
+                {% elif plant.image_url %}
+                    <img src="{{ plant.image_url }}" alt="{{ plant.nickname }}" class="plant-img" />
+                {% else %}
+                    <img src="{% static 'plants/images/default.jpg' %}" alt="Default plant" class="plant-img" />
+                {% endif %}
+                <p><strong>{{ plant.nickname }}</strong> ({{ plant.species }})</p>
+                <p class="small-muted">Added: {{ plant.date_added }}</p>
+            </div>
+
+            <!-- Modal -->
+            <div id="modal-{{ plant.id }}" class="modal" style="display:none;">
+                <div class="modal-content">
+                    <span class="close" onclick="closeModal({{ plant.id }})">&times;</span>
+                    <div id="plant-details-{{ plant.id }}">
                         {% if plant.image %}
-                            <img src="{{ plant.image.url }}" alt="{{ plant.nickname }}" width="100" />
+                            <img src="{{ plant.image.url }}" alt="{{ plant.nickname }}" class="modal-img" />
+                        {% elif plant.image_url %}
+                            <img src="{{ plant.image_url }}" alt="{{ plant.nickname }}" class="modal-img" />
                         {% else %}
-                            <img src="{{ MEDIA_URL }}plant_images/default.jpg" alt="Default plant" width="100" />
+                            <img src="{% static 'plants/images/default.jpg' %}" alt="Default plant" class="modal-img" />
                         {% endif %}
-                        <p>{{ plant.nickname }} ({{ plant.species }})</p>
-                        <p>Date added: {{ plant.date_added }}</p>
+                        <p><strong>Nickname:</strong> {{ plant.nickname }}</p>
+                        <p><strong>Species:</strong> {{ plant.species }}</p>
+                        <p><strong>Light Needs:</strong> {{ plant.sunlight }}</p>
+                        <p><strong>Water Needs:</strong> {{ plant.watering }}</p>
+                        <p><strong>Plant Info:</strong> {{ plant.info_summary }}</p>
+                        <p><strong>Date Added:</strong> {{ plant.date_added }}</p>
+                        <button onclick="showEditForm({{ plant.id }})" class="btn-edit">Edit</button>
                     </div>
 
-                    <!-- Modal -->
-                    <div id="modal-{{ plant.id }}" class="modal" style="display:none;">
-                        <div class="modal-content">
-                            <span class="close" onclick="closeModal({{ plant.id }})">&times;</span>
-
-                            <!-- Static Display -->
-                            <div id="plant-details-{{ plant.id }}">
-                                {% if plant.image %}
-                                    <img src="{{ plant.image.url }}" alt="{{ plant.nickname }}" width="150" />
-                                {% else %}
-                                    <img src="{{ MEDIA_URL }}plant_images/default.jpg" alt="Default plant" width="150" />
-                                {% endif %}
-                                <p><strong>Nickname:</strong> {{ plant.nickname }}</p>
-                                <p><strong>Species:</strong> {{ plant.species }}</p>
-                                <p><strong>Light Needs:</strong> {{ plant.sunlight }}</p>
-                                <p><strong>Water Needs:</strong> {{ plant.watering }}</p>
-                                <p><strong>Plant Info:</strong> {{ plant.info_summary }}</p>
-                                <p><strong>Date Added:</strong> {{ plant.date_added }}</p>
-                                <button onclick="showEditForm({{ plant.id }})">Edit</button>
-                            </div>
-
-                            <!-- Hidden Edit Form -->
-                            <div id="edit-form-{{ plant.id }}" style="display: none;">
-                                <form method="POST" enctype="multipart/form-data">
-                                    {% csrf_token %}
-                                    {% with form=edit_forms|dict_key:plant.id %}
-                                        {{ form.as_p }}
-                                    {% endwith %}
-                                    <input type="hidden" name="edit_plant_id" value="{{ plant.id }}">
-                                    <button type="submit" name="edit">Save Changes</button>
-                                </form>
-                            </div>
-                        </div>
+                    <div id="edit-form-{{ plant.id }}" style="display: none;">
+                        <form method="POST" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {% with form=edit_forms|dict_key:plant.id %}
+                                {{ form.as_p }}
+                            {% endwith %}
+                            <input type="hidden" name="edit_plant_id" value="{{ plant.id }}">
+                            <button type="submit" name="edit" class="btn-submit">Save Changes</button>
+                        </form>
                     </div>
+                </div>
+            </div>
 
-                    <!-- Delete form -->
-                    <form method="POST" style="margin-top: 5px;" onsubmit="return confirmDeletion();">
-                        {% csrf_token %}
-                        <input type="hidden" name="delete_plant_id" value="{{ plant.id }}">
-                        <button type="submit" name="delete" style="color: red;">Delete</button>
-                    </form>
-                </li>
-            {% endfor %}
-        </ul>
+            <form method="POST" class="delete-form" onsubmit="return confirmDeletion();">
+                {% csrf_token %}
+                <input type="hidden" name="delete_plant_id" value="{{ plant.id }}">
+                <button type="submit" name="delete" class="btn-delete">Delete</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
     {% else %}
         <p>You haven't added any plants yet.</p>
     {% endif %}
 
-    <br>
-    <a href="{% url 'dashboard' %}">← Back to Dashboard</a>
-    <script src="{% static 'plants/js/plant_search.js' %}" defer></script>
-</body>
-</html>
+    <a href="{% url 'dashboard' %}" class="link-back">← Back to Dashboard</a>
+</div>
+
+<!-- Scripts -->
+<script src="{% static 'plants/js/plant_modals.js' %}" defer></script>
+<script src="{% static 'plants/js/add_plant_toggle.js' %}" defer></script>
+<script src="{% static 'plants/js/plant_search.js' %}" defer></script>
+<script>
+    const API_KEY = "{{ PERENUAL_API_KEY }}";
+</script>
+{% endblock %}
