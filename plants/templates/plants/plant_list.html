@@ -6,6 +6,9 @@
 <head>
     <title>My Plants</title>
     <link rel="stylesheet" href="{% static 'plants/css/plant_modals.css' %}">
+    <script>
+        const API_KEY = "{{ PERENUAL_API_KEY }}";
+    </script>
     <script src="{% static 'plants/js/plant_modals.js' %}" defer></script>
     <script src="{% static 'plants/js/add_plant_toggle.js' %}" defer></script>
 </head>
@@ -19,10 +22,73 @@
     <div id="add-plant-form" style="display: none; margin-top: 10px;">
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ add_form.as_p }}
+
+            <!-- Species input + Search button -->
+            <label for="id_species">Species (scientific name):</label>
+            <input type="text" id="id_species" name="species">
+            <button type="button" id="search-species-btn">🔍 Search</button>
+
+            <!-- Dropdown for Search results -->
+            <select id="plant-dropdown" style="display: none;">
+                <option disabled selected>Choose a plant</option>
+            </select>
+
+            <!-- Image Preview from API (or default) -->
+            <img id="plant-preview" src="{% static 'plants/images/default.jpg' %}" width="150" alt="Plant Preview" style="margin: 10px 0;">
+
+            <p>
+                <label for="id_image">Upload Image:</label><br>
+                {{ add_form.image }}
+            </p>
+
+            <p>
+                <label for="id_nickname">Nickname:</label><br>
+                {{ add_form.nickname }}
+            </p>
+
+            <p>
+                <label for="id_common_name">Common Name:</label><br>
+                {{ add_form.common_name }}
+            </p>
+
+            <p>
+                <label for="id_other_names">Other Names:</label><br>
+                {{ add_form.other_names }}
+            </p>
+
+            <p>
+                <label for="id_watering">Watering Needs:</label><br>
+                {{ add_form.watering }}
+            </p>
+
+            <p>
+                <label for="id_sunlight">Sunlight Exposure:</label><br>
+                {{ add_form.sunlight }}
+            </p>
+
+            <p>
+                <label for="id_info_summary">Plant Info Summary:</label><br>
+                {{ add_form.info_summary }}
+            </p>
+
+            <p>
+                <label for="id_last_watered">Last Watered:</label><br>
+                {{ add_form.last_watered }}
+            </p>
+
+            <p>
+                <label for="id_water_interval">Water Interval (days):</label>
+                <input type="number" id="id_water_interval" name="water_interval_days" readonly>
+            
+                <label style="margin-left: 10px;">
+                    <input type="checkbox" id="override_water_interval"> Let me edit this
+                </label>
+            </p>            
+
             <button type="submit" name="add">Submit</button>
         </form>
     </div>
+
 
     <hr>
 
@@ -58,8 +124,7 @@
                                 <p><strong>Species:</strong> {{ plant.species }}</p>
                                 <p><strong>Light Needs:</strong> {{ plant.sunlight }}</p>
                                 <p><strong>Water Needs:</strong> {{ plant.watering }}</p>
-                                <p><strong>Soil Type:</strong> {{ plant.soil }}</p>
-                                <p><strong>Care Instructions:</strong> {{ plant.care_instructions }}</p>
+                                <p><strong>Plant Info:</strong> {{ plant.info_summary }}</p>
                                 <p><strong>Date Added:</strong> {{ plant.date_added }}</p>
                                 <button onclick="showEditForm({{ plant.id }})">Edit</button>
                             </div>
@@ -93,5 +158,6 @@
 
     <br>
     <a href="{% url 'dashboard' %}">← Back to Dashboard</a>
+    <script src="{% static 'plants/js/plant_search.js' %}" defer></script>
 </body>
 </html>

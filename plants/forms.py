@@ -1,5 +1,5 @@
 from django import forms
-from .models import Plant
+from .models import Plant, WishlistPlant
 
 class PlantForm(forms.ModelForm):
     class Meta:
@@ -8,11 +8,24 @@ class PlantForm(forms.ModelForm):
             'image',
             'nickname',
             'species',
-            'last_watered',
-            'water_interval_days',
-            'care_instructions',
-            'suggested_water_days',
-            'sunlight',
+            'common_name',
+            'other_names',
             'watering',
-            'soil'
+            'sunlight',
+            'info_summary',
+            'last_watered',
+            'water_interval_days'
+        ]
+class WishlistPlantForm(forms.ModelForm):
+    class Meta:
+        model = WishlistPlant
+        fields = [
+            'species',
+            'common_name',
+            'other_names',
+            'watering',
+            'sunlight',
+            'info_summary',
+            'image_url',
+            'notes'
         ]

@@ -7,6 +7,9 @@ name = "pypi"
 django = "*"
 django-heroku = "*"
 pillow = "*"
+python-dotenv = "*"
+requests = "*"
+python-decouple = "*"
 
 [dev-packages]
 

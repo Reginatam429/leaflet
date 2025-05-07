@@ -9,9 +9,9 @@
     <p>What would you like to do?</p>
     <ul>
         <li><a href="{% url 'plant_list' %}">View My Plants</a></li>
-        <li><a href="#">View My Wishlist</a></li>
+        <li><a href="{% url 'wishlist' %}">View My Wishlist</a></li>
         <li><a href="#">Identify a Plant</a></li>
-        <li><a href="#">Log Out</a></li>
+        <li><a href="{% url 'logout' %}">Log Out</a></li>
     </ul>
 </body>
 </html>
