@@ -4,13 +4,15 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-django-heroku = "*"
+django = "*"
 pillow = "*"
 python-dotenv = "*"
 requests = "*"
-python-decouple = "*"
-django = "*"
+django-heroku = "*"
+gunicorn = "*"
+psycopg2-binary = "*"
 dj-database-url = "*"
+python-decouple = "*"
 
 [dev-packages]
 
