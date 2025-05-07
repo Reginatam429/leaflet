@@ -1,5 +1,5 @@
 from django import forms
-from .models import Plant, WishlistPlant
+from .models import Plant, WishlistPlant, PhotoIdentification
 
 class PlantForm(forms.ModelForm):
     class Meta:
@@ -29,3 +29,8 @@ class WishlistPlantForm(forms.ModelForm):
             'image_url',
             'notes'
         ]
+
+class PhotoIdentificationForm(forms.ModelForm):
+    class Meta:
+        model = PhotoIdentification
+        fields = ['image']

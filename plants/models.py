@@ -64,7 +64,7 @@ class WishlistPlant(models.Model):
         return f"{self.common_name or self.species} (wishlist)"
 
 class PhotoIdentification(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='photo_identifications')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='plant_photos/')
     result_species = models.CharField(max_length=100, blank=True)
     confidence = models.FloatField(null=True, blank=True)

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+        <h2>🌱 Identification Result</h2>
+
+        {% if result %}
+        <p><strong>Species:</strong> {{ result.result.classification.suggestions.0.name }}</p>
+        <p><strong>Confidence:</strong> {{ result.result.classification.suggestions.0.probability|floatformat:2 }}%</p>
+
+        {% if result.input.images %}
+            <img src="{{ result.input.images.0 }}" alt="Uploaded Plant" class="plant-img">
+        {% endif %}
+        {% else %}
+        <p>Sorry, we couldn't identify the plant.</p>
+        {% endif %}
+
+        <a href="{% url 'identify_plant' %}" class="btn-primary">🔁 Try Another</a>
+    </div>
+{% endblock %}

@@ -34,7 +34,7 @@ urlpatterns = [
     path('search-plants/', views.search_plants, name='search_plants'),
     path('plant-details/<int:plant_id>/', views.plant_details, name='plant_details'),
     path('add-to-wishlist/', views.add_to_wishlist, name='add_to_wishlist'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

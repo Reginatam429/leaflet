@@ -5,11 +5,36 @@
     <meta charset="UTF-8">
     <title>Leaflet</title>
     <link rel="stylesheet" href="{% static 'plants/css/plant_modals.css' %}">
+    <style>
+        .logo-button {
+            background: none;
+            border: none;
+            font: inherit;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        }
+
+        .logo-button h1 {
+            font-size: 1.5em;
+            color: inherit;
+            text-decoration: none;
+        }
+    </style>
 </head>
 <body>
     <header>
         <div class="navbar">
-            <h1 class="logo">🌿 Leaflet</h1>
+            {% if user.is_authenticated %}
+                <form method="get" action="{% url 'dashboard' %}">
+            {% else %}
+                <form method="get" action="{% url 'welcome' %}">
+            {% endif %}
+                    <button type="submit" class="logo-button">
+                        <h1 class="logo">🌿 Leaflet</h1>
+                    </button>
+                </form>
+
             <div class="dropdown">
                 <button class="dropbtn">☰ Menu</button>
                 <div class="dropdown-content">
@@ -17,7 +42,7 @@
                         <a href="{% url 'dashboard' %}">Dashboard</a>
                         <a href="{% url 'plant_list' %}">My Plants</a>
                         <a href="{% url 'wishlist' %}">Wishlist</a>
-                        <a href="#">Identify a Plant</a>
+                        <a href="{% url 'identify_plant' %}">Identify a Plant</a>
                         <a href="{% url 'logout' %}">Log Out</a>
                     {% else %}
                         <a href="{% url 'login' %}">Log In</a>

@@ -10,7 +10,14 @@ from .forms import WishlistPlantForm
 import requests
 from django.conf import settings
 import json
+import base64
+import requests
+from django.contrib.auth.decorators import login_required
+from decouple import config
+from .forms import PhotoIdentificationForm
+from .models import PhotoIdentification
 
+PLANT_ID_API_KEY = config("PLANT_ID_API_KEY")
 
 
 def welcome(request):
@@ -185,3 +192,62 @@ def add_from_wishlist_to_myplants(request):
     wishlist_plant.delete()
 
     return JsonResponse({'status': 'added', 'plant_id': new_plant.id})
+
+import requests
+from django.conf import settings
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+
+@login_required
+def identify_plant(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        image = request.FILES['image']
+        api_key = settings.PLANT_ID_API_KEY
+        url = "https://plant.id/api/v3/identification"
+
+        headers = {
+            'Api-Key': api_key,
+        }
+
+        files = {
+            'images': image,
+        }
+
+        try:
+            response = requests.post(url, headers=headers, files=files)
+
+            try:
+                result_data = response.json()
+            except ValueError:
+                print("Failed to parse JSON. Raw response:")
+                print(response.text)
+                messages.error(request, "Failed to decode response from Plant ID API.")
+                return render(request, 'plants/identify_plant.html')
+
+            if response.status_code != 201:
+                error_message = result_data.get('message', 'Unknown error')
+                print(f"Plant ID API error ({response.status_code}): {error_message}")
+                messages.error(request, f"Plant ID API error: {error_message}")
+                return render(request, 'plants/identify_plant.html')
+
+            # Extract plant info from result
+            suggestions = result_data.get('result', {}).get('classification', {}).get('suggestions', [])
+            if suggestions:
+                top_result = suggestions[0]
+                context = {
+                    'identified': True,
+                    'name': top_result.get('name', 'Unknown'),
+                    'probability': round(top_result.get('probability', 0) * 100, 2),
+                    'image_url': result_data.get('input', {}).get('images', [])[0],
+                }
+                return render(request, 'plants/identification_result.html', context)
+            else:
+                messages.warning(request, "No plant suggestions returned.")
+                return render(request, 'plants/identify_plant.html')
+
+        except requests.RequestException as e:
+            print("RequestException:", e)
+            messages.error(request, f"Request failed: {str(e)}")
+
+    return render(request, 'plants/identify_plant.html')
