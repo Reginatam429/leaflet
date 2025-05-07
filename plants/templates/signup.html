@@ -1,15 +1,18 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sign Up</title>
-</head>
-<body>
-    <h1>Create an account</h1>
-    <form method="post">
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="welcome-container">
+    <h1 class="welcome-title">Create an Account 🌱</h1>
+
+    <form method="post" class="form-box">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Sign Up</button>
+        <button type="submit" class="btn btn-primary">Sign Up</button>
     </form>
-    <p>Already have an account? <a href="{% url 'login' %}">Log In</a></p>
-</body>
-</html>
+
+    <p style="margin-top: 1.5rem;">Already have an account? 
+        <a href="{% url 'login' %}" class="btn btn-submit">Log In</a>
+    </p>
+</div>
+{% endblock %}

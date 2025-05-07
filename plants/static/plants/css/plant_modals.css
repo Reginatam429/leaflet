@@ -384,3 +384,73 @@ button,
     margin: 2rem 0;
     gap: 0.75rem;
 }
+
+.welcome-container {
+    max-width: 700px;
+    margin: 4rem auto;
+    text-align: center;
+    background-color: var(--highlight);
+    padding: 2.5rem;
+    border-radius: 16px;
+    border: 2px solid var(--accent);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.welcome-title {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+.welcome-blurb {
+    font-size: 1.2rem;
+    color: var(--text);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.welcome-links .btn {
+    padding: 0.7rem 1.2rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    min-width: 120px;
+    display: inline-block;
+    transition: background-color 0.2s ease;
+    text-align: center;
+}
+
+.welcome-links .btn-primary {
+    background-color: var(--primary);
+    color: white;
+}
+
+.welcome-links .btn-submit {
+    background-color: var(--accent);
+    color: var(--text);
+}
+
+.flash-messages {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.flash.success {
+    color: #155724;
+    background-color: #d4edda;
+    padding: 1rem;
+    margin: 1rem auto;
+    border-radius: 6px;
+    max-width: 600px;
+}
+
+.alert {
+    background-color: var(--highlight);
+    color: var(--text);
+    border-left: 4px solid var(--primary);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 6px;
+}

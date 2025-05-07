@@ -1,12 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Welcome to Leaflet</title>
-</head>
-<body>
-    <h1>Welcome to Leaflet 🌿</h1>
-    <p>Please log in or sign up to continue.</p>
-    <a href="{% url 'login' %}">Log In</a> |
-    <a href="{% url 'signup' %}">Sign Up</a>
-</body>
-</html>
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="welcome-container">
+    <h1 class="welcome-title">Welcome to Leaflet 🌿</h1>
+    <p class="welcome-blurb">
+        Leaflet is your personal plant tracker. Save your favorite species, get care tips, and keep your collection thriving.
+    </p>
+    <div class="welcome-links">
+        <a href="{% url 'login' %}" class="btn btn-primary">Log In</a>
+        <a href="{% url 'signup' %}" class="btn btn-submit">Sign Up</a>
+    </div>
+</div>
+{% endblock %}

@@ -29,8 +29,16 @@
     </header>
 
     <main>
+        {% if messages %}
+            <div class="flash-messages">
+                {% for message in messages %}
+                    <p class="flash {{ message.tags }}">{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
         {% block content %}{% endblock %}
     </main>
+    
     <script src="{% static 'plants/js/navbar.js' %}"></script>
 </body>
 </html>

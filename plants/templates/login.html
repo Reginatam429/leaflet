@@ -1,18 +1,22 @@
-<!-- plants/templates/login.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login to Leaflet</title>
-</head>
-<body>
-    <h1>Login</h1>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="welcome-container">
+    <h1 class="welcome-title">Log in to Leaflet 🌿</h1>
+    
     {% if form.errors %}
-        <p style="color: red;">Invalid username or password</p>
+        <p style="color: red;">Invalid username or password. Please try again.</p>
     {% endif %}
-    <form method="post">
+
+    <form method="post" class="form-box">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Log in</button>
+        <button type="submit" class="btn btn-primary">Log In</button>
     </form>
-</body>
-</html>
+
+    <p style="margin-top: 1.5rem;">Don't have an account? 
+        <a href="{% url 'signup' %}" class="btn btn-submit">Sign Up</a>
+    </p>
+</div>
+{% endblock %}
